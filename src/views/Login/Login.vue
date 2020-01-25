@@ -22,7 +22,7 @@
 
                 <!-- 登陆button -->
                 <el-form-item>
-                    <el-button @click.native.prevent="handleSubmit" type="primary" style="width: 100%;" >登陆</el-button>
+                    <el-button :loading="isLogin" @click.native.prevent="handleSubmit" type="primary" style="width: 100%;" >登陆</el-button>
                 </el-form-item>
 
                 <!-- 7天自动登陆 -->
@@ -38,12 +38,17 @@
 
 <script lang="ts">
     import {Component, Vue, Provide} from 'vue-property-decorator'
+    import { State, Getter, Mutation, Action } from "vuex-class"
     import LoginHeader from './LoginHeader.vue'
 
     @Component({
         components: { LoginHeader }
     })
     export default class Login extends Vue {
+        // 存储用户信息
+        @Action("setUser") setUser: any;
+        @Provide() isLogin:boolean = false;
+
         @Provide() ruleForm: {
             username: string;
             pwd: string;
@@ -62,7 +67,21 @@
         handleSubmit(): void {
             (this.$refs["ruleForm"] as any ).validate((valid: boolean) => {
                 if (valid) {
-                    console.log("校验通过..")
+                    // console.log("校验通过..")
+                    this.isLogin = true;
+                    (this as any).$axios
+                        .post("/api/users/login", this.ruleForm)
+                        .then((res: any) => {
+                            this.isLogin = false;
+                        // 存储token
+                        console.log(res.data);
+                        localStorage.setItem("tsToken", res.data.token);
+                        // 存储到vuex中
+                        this.setUser(res.data.token);
+                            this.$router.push("/")
+                    }).catch(() => {
+                        this.isLogin = false;
+                    })
                 }
             })
         }
