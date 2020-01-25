@@ -6,7 +6,7 @@ const mutations: MutationTree<any> = {
     },
     SET_ROUTERS(state: any, routers: any): void {
         state.routers = routers;
-    }
+    },
 };
 
 export default mutations;

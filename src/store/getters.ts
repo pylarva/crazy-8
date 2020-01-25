@@ -6,7 +6,7 @@ const getters: GetterTree<any, any> = {
     },
     routers(state: any): any {
         return state.routers;
-    }
+    },
 };
 
 export default getters;

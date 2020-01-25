@@ -4,6 +4,106 @@ import Layout from '../views/Layout/index.vue';
 
 Vue.use(VueRouter);
 
+export const asyncRouterMap = [
+    {
+        path: '/',
+        name: 'dashboard',
+        component: Layout,
+        hidden: true,
+        redirect: '/home',
+        children: [
+            {
+                path: '/home',
+                name: 'home',
+                meta: {title: '首页', icon: 'fa fa-home'},
+                component: () => import('../views/Home.vue'),
+            },
+        ],
+    },
+    {
+        path: '/dataManage',
+        name: 'dataManage',
+        hidden: true,
+        meta: {title: '数据管理', icon: 'fa fa-database'},
+        component: Layout,
+        redirect: '/TableData',
+        children: [
+            {
+                path: '/tableData',
+                name: 'tableData',
+                meta: {title: '表格管理', icon: 'fa fa-table'},
+                component: () => import('../views/DataManage/TableData.vue'),
+            },
+            {
+                path: '/formData',
+                name: 'formData',
+                meta: {title: '表单管理', icon: 'fa fa-file-text-o'},
+                component: () => import('../views/DataManage/FormData.vue'),
+            },
+            {
+                path: '/chartsData',
+                name: 'chartsData',
+                meta: {title: '图表管理', icon: 'fa fa-bar-chart'},
+                component: () => import('../views/DataManage/ChartsData.vue'),
+            },
+        ],
+    },
+    {
+        path: '/userManage',
+        name: 'userManage',
+        hidden: true,
+        component: Layout,
+        redirect: '/accountData',
+        children: [
+            {
+                path: '/accountData',
+                name: 'accountData',
+                meta: {title: '账户管理', icon: 'fa fa-user-plus'},
+                component: () => import('../views/UserManage/AccountData.vue'),
+            },
+        ],
+    },
+    {
+        path: '/user',
+        hidden: false,
+        component: Layout,
+        redirect: '/userInfo',
+        children: [
+            {
+                path: '/userInfo',
+                name: 'userInfo',
+                meta: {title: '个人中心'},
+                component: () => import('../views/UserManage/UserInfo.vue'),
+            },
+        ],
+    },
+    {
+        path: '/404',
+        name: '404',
+        hidden: false,
+        meta: {title: '404'},
+        component: () => import('../views/404.vue'),
+    },
+    {
+        path: '/login',
+        name: 'login',
+        hidden: false,
+        meta: {title: '系统登陆'},
+        component: () => import('@/views/Login/Login.vue'),
+    },
+    {
+        path: '/password',
+        name: 'password',
+        hidden: false,
+        meta: {title: '忘记密码'},
+        component: () => import('@/views/Login/Password.vue'),
+    },
+    {
+        path: '*',
+        redirect: '/404',
+    },
+];
+
 const routes = [
   {
     path: '/',
@@ -13,19 +113,19 @@ const routes = [
   {
       path: '/login',
       name: 'login',
-      component: () => import("@/views/Login/Login.vue"),
+      component: () => import('@/views/Login/Login.vue'),
   },
     {
         path: '/password',
         name: 'password',
-        component: () => import("@/views/Login/Password.vue"),
+        component: () => import('@/views/Login/Password.vue'),
     },
 ];
 
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
-  routes,
+  routes: asyncRouterMap,
 });
 
 router.beforeEach((to: any, from: any, next: any) => {
