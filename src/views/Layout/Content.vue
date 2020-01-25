@@ -11,9 +11,11 @@
             <div class="top">
                 <i class="fa fa-reorder"></i>
                 <el-breadcrumb class="breadcrumb" separator="/">
-                    <el-breadcrumb-item>活动管理</el-breadcrumb-item>
-                    <el-breadcrumb-item>活动列表</el-breadcrumb-item>
-                    <el-breadcrumb-item>活动详情</el-breadcrumb-item>
+                    <el-breadcrumb-item
+                            v-for="(item,index) in breadCrumbItems"
+                            :key="index"
+                            :to="{path:item.path}"
+                    >{{item.title}}</el-breadcrumb-item>
                 </el-breadcrumb>
             </div>
             <!-- 页面内容 -->
@@ -30,7 +32,33 @@
         components: {}
     })
     export default class Content extends Vue {
+        @Provide() breadCrumbItems: any; // 面包屑的数组
 
+        @Watch("$route") handleRouteChange(to: any) {
+            this.initBreadCrumbItems(to);
+        }
+
+        created() {
+            this.initBreadCrumbItems(this.$route);
+        }
+
+        initBreadCrumbItems(router: any) {
+            // console.log(router);
+            // 根路由title
+            let breadCrumbItems: any = [{ path: "/", title: "后台管理系统" }];
+
+            // 遍历父级到当前子路由的页面的title和path 存储到数组里
+            for (const index in router.matched) {
+                if (router.matched[index].meta && router.matched[index].meta.title) {
+                    breadCrumbItems.push({
+                        path: router.matched[index].path ? router.matched[index].path : "/",
+                        title: router.matched[index].meta.title
+                    });
+                }
+            }
+
+            this.breadCrumbItems = breadCrumbItems;
+        }
     }
 </script>
 
