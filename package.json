@@ -9,9 +9,11 @@
   },
   "dependencies": {
     "@types/axios": "^0.14.0",
+    "@types/echarts": "^4.4.2",
     "@types/jwt-decode": "^2.2.1",
     "axios": "^0.19.2",
     "core-js": "^3.4.4",
+    "echarts": "^4.6.0",
     "element-ui": "^2.13.0",
     "jwt-decode": "^2.2.0",
     "vue": "^2.6.10",
