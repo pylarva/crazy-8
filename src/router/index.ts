@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Layout from '../views/Layout/index.vue';
+import jwt_decode from 'jwt-decode';
 
 Vue.use(VueRouter);
 
@@ -37,7 +38,7 @@ export const asyncRouterMap = [
             {
                 path: '/formData',
                 name: 'formData',
-                meta: {title: '表单管理', icon: 'fa fa-file-text-o'},
+                meta: {title: '表单管理', icon: 'fa fa-file-text-o', roles: ['admin', 'editor']},
                 component: () => import('../views/DataManage/FormData.vue'),
             },
             {
@@ -58,7 +59,7 @@ export const asyncRouterMap = [
             {
                 path: '/accountData',
                 name: 'accountData',
-                meta: {title: '账户管理', icon: 'fa fa-user-plus'},
+                meta: {title: '账户管理', icon: 'fa fa-user-plus', roles: ['admin']},
                 component: () => import('../views/UserManage/AccountData.vue'),
             },
         ],
@@ -129,12 +130,38 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to: any, from: any, next: any) => {
-   const isLogin = localStorage.tsToken ? true : false;
-   if (to.path == '/login' || to.path == '/password') {
-       next();
-   } else {
-       isLogin ? next() : next('/login');
-   }
+    const isLogin = localStorage.tsToken ? true : false;
+    if (to.path == '/login' || to.path == '/password') {
+        next();
+    } else {
+        if (isLogin) {
+            const decoded: any = jwt_decode(localStorage.tsToken);
+            const { key } = decoded;
+            // 权限判断
+            if (hasPermission(key, to)) {
+                next();
+            } else {
+                next('/404'); // 没有权限进入
+            }
+        } else {
+            next('/login');
+        }
+    }
 });
+
+/**
+ * 判断是否有权限
+ * @param roles 当前角色
+ * @param route 当前路由对象
+ * */
+function hasPermission(roles: string, route: any) {
+    if (route.meta && route.meta.roles) {
+        // 如果meta.roles是否包含角色的key值,如果包含那么就是有权限,否则无权限
+        return route.meta.roles.some((role: string) => role.indexOf(roles) >= 0);
+    } else {
+        // 默认不设置有权限
+        return true;
+    }
+}
 
 export default router;

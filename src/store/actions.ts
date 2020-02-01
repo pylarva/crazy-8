@@ -1,24 +1,17 @@
 import { ActionTree } from 'vuex';
 import jwt_decode from 'jwt-decode';
-// import { asyncRouterMap } from '../router';
+import { asyncRouterMap } from '../router/index';
 
 const actions: ActionTree<any, any> = {
-    async setUser({state, commit}, user: any){
+    async setUser({ state, commit }, user: any) {
         const decoded: any = jwt_decode(user);
-        commit("SET_USER", decoded);
-    },
+        commit('SET_USER', decoded);
+        const { key } = decoded;
+        // 返回当前用户拥有权限的路由
+        let accessedRouters = filterAsyncRouter(asyncRouterMap, key);
+        commit('SET_ROUTERS', accessedRouters);
+    }
 };
-
-// const actions: ActionTree<any, any> = {
-//     async setUser({ state, commit }, user: any) {
-//         const decoded: any = jwt_decode(user);
-//         commit('SET_USER', decoded);
-//         const { key } = decoded;
-//         // 返回当前用户拥有权限的路由
-//         let accessedRouters = filterAsyncRouter(asyncRouterMap, key);
-//         commit('SET_ROUTERS', accessedRouters);
-//     }
-// };
 
 /**
  * 递归过滤异步路由表，返回符合用户角色权限的路由表
